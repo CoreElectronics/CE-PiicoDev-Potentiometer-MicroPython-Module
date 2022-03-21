@@ -5,11 +5,11 @@
  * Date: MARCH 2022
  * An I2C based module that reads the PiicoDev Potentiometer
  *
- * Feel like supporting PiicoDev? Buy a module here: https://core-electronics.com.au/catalog/product/view/sku/CE07910
+ * Feel like supporting PiicoDev? Buy a module here: https://core-electronics.com.au/catalog/product/view/sku/CE08463
  *
  */
 
-#define DEBUG 0
+#define DEBUG 1
 
 #include <Wire.h>
 #include <EEPROM.h>
