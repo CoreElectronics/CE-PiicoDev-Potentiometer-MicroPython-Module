@@ -21,8 +21,8 @@
 #define FIRMWARE_MINOR 0x01
 
 #define DEVICE_ID 0x51
-#define DEFAULT_I2C_ADDRESS 0x5C    // The default address when all switches are off
-#define I2C_ADDRESS_POOL_START 0x08 // The start of the 'smart module address pool' - addresses settable by switches
+#define DEFAULT_I2C_ADDRESS 0x35    // The default address when all switches are off
+#define I2C_ADDRESS_POOL_START 0x08 // The start of the 'smart module address pool' minus 1 - addresses settable by switches
 #define SOFTWARE_ADDRESS true
 #define HARDWARE_ADDRESS false
 #define I2C_BUFFER_SIZE 32 //For ATmega328 based Arduinos, the I2C buffer is limited to 32 bytes
@@ -37,9 +37,7 @@ uint8_t oldAddress;
 // Hardware Connectins
 #if defined(__AVR_ATtiny806__) || defined(__AVR_ATtiny816__)
 const uint8_t powerLedPin = PIN_PC2;
-const uint16_t buzzerPins[] = {PIN_PA3, PIN_PA1, PIN_PA2}; // In ascending order of loudness
-const uint16_t buzzerCommon = PIN_PA4; // provision for push-pull drive. Unused for now...
-uint16_t buzzerPin = PIN_PA2;
+const uint16_t potentiometerPin = 0;
 
 const uint8_t addressPin1 = PIN_PA7;
 const uint8_t addressPin2 = PIN_PB5;
@@ -50,8 +48,7 @@ const uint8_t addressPin4 = PIN_PB2;
 // Prototyping with Arduino Uno
 #if defined(__AVR_ATmega328P__)
   const uint8_t powerLedPin = 3;
-  const int buzzerPin = 9;
-
+  const uint16_t potentiometerPin = 0;
   const int addressPin1 = 8;
   const int addressPin2 = 7;
   const int addressPin3 = 6;
@@ -88,8 +85,7 @@ struct memoryMap {
   uint8_t firmwareMajor;
   uint8_t firmwareMinor;
   uint8_t i2cAddress;
-  uint16_t tone;
-  uint8_t volume;
+  uint16_t pot;
   uint8_t led;
 };
 
@@ -100,8 +96,7 @@ const memoryMap registerMap = {
   .firmwareMajor = 0x02,
   .firmwareMinor = 0x03,
   .i2cAddress = 0x04,
-  .tone = 0x05,
-  .volume = 0x06,
+  .pot = 0x05,
   .led = 0x07,
 };
 
@@ -111,8 +106,7 @@ volatile memoryMap valueMap = {
   .firmwareMajor = FIRMWARE_MAJOR,
   .firmwareMinor = FIRMWARE_MINOR,
   .i2cAddress = DEFAULT_I2C_ADDRESS,
-  .tone = 0x00,
-  .volume = 0x00,
+  .pot = 0x00,
   .led = 0x01
 };
 
@@ -128,8 +122,7 @@ void statusReturn(char *data);
 void firmwareMajorReturn(char *data);
 void firmwareMinorReturn(char *data);
 void setAddress(char *data);
-void setTone(char *data);
-void setVolume(char *data);
+void readPotentiometer(char *data);
 void setPowerLed(char *data);
 
 functionMap functions[] = {
@@ -138,8 +131,7 @@ functionMap functions[] = {
   {registerMap.firmwareMajor, firmwareMajorReturn},
   {registerMap.firmwareMinor, firmwareMinorReturn},
   {registerMap.i2cAddress, setAddress},
-  {registerMap.tone, setTone},
-  {registerMap.volume, setVolume},
+  {registerMap.pot, readPotentiometer},
   {registerMap.led, setPowerLed},
 };
 
@@ -151,8 +143,6 @@ void setup() {
   Serial.begin(115200);
   Serial.println("Begin");
 #endif
-
-  pinMode(buzzerCommon, OUTPUT); digitalWrite(buzzerCommon, LOW);
 
   // Pull up address pins
   pinMode(addressPin1, INPUT_PULLUP);
@@ -200,6 +190,10 @@ void startI2C()
   bitWrite(switchPositions, 1, !digitalRead(addressPin2));
   bitWrite(switchPositions, 2, !digitalRead(addressPin3));
   bitWrite(switchPositions, 3, !digitalRead(addressPin4));
+  #if DEBUG
+    Serial.print("switchPositions");
+    Serial.println(switchPositions);
+  #endif
   if (switchPositions != 0) IOaddress = I2C_ADDRESS_POOL_START + switchPositions; // use the "smart-module address pool" when any hardware address is set
 
   //If any of the address jumpers are set, we use jumpers
@@ -222,7 +216,10 @@ void startI2C()
 
   //save new address to the register map
   valueMap.i2cAddress = address;
-
+  #if DEBUG
+    Serial.print("I2C Address:");
+    Serial.println(address);
+  #endif
   recordSystemSettings(); // save the new address to EEPROM
 
   //reconfigure Wire instance

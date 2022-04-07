@@ -5,39 +5,16 @@
 // Macro for number of elements in an array
 #define COUNT_OF(x) ((sizeof(x)/sizeof(0[x])) / ((size_t)(!(sizeof(x) % sizeof(0[x])))))
 
-
-void setTone(char *data) {
-  uint16_t frequency = (uint8_t(data[0]) << 8) + uint8_t(data[1]);
-  uint16_t duration = (uint8_t(data[2]) << 8) + uint8_t(data[3]);
-  playTone(frequency, duration);
+void readPotentiometer(char *data) {
+  #if DEBUG
+    Serial.println(analogRead(potentiometerPin));
+  #endif
+  valueMap.pot = analogRead(potentiometerPin);
+  responseType = RESPONSE_VALUE;
+  //loadArray((byte)(valueMap.pot >> 8));
+  loadArray((unsigned int)valueMap.pot);
+  valueMap.status |= (1 << STATUS_LAST_COMMAND_SUCCESS); //Command success
 }
-
-void playTone(uint16_t frequency, uint16_t duration) {
-  if (frequency == 0){ // stop playing
-    noTone(buzzerPin);
-  }
-  if (duration == 0){
-    tone(buzzerPin, frequency);
-  } else {
-    tone(buzzerPin, frequency, duration);
-  }
-}
-
-void setVolume(char *data) {
-  uint8_t vol = data[0];
-  if (vol >=0 && vol < COUNT_OF(buzzerPins)) volume(uint8_t(data[0]));
-}
-
-void volume(uint8_t vol) {
-  // Reset all buzzer pins
-  for (uint8_t i = 0; i < COUNT_OF(buzzerPins); i++) {
-    pinMode(buzzerPins[i], INPUT);
-  }
-  // Select the desired pin to use
-  buzzerPin = buzzerPins[vol];
-  pinMode(buzzerPin, OUTPUT);
-}
-
 
 void idReturn(char *data) {
   responseType = RESPONSE_VALUE;
