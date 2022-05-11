@@ -11,7 +11,6 @@ void readPotentiometer(char *data) {
   #endif
   valueMap.pot = analogRead(potentiometerPin);
   responseType = RESPONSE_VALUE;
-  //loadArray((byte)(valueMap.pot >> 8));
   loadArray((unsigned int)valueMap.pot);
   valueMap.status |= (1 << STATUS_LAST_COMMAND_SUCCESS); //Command success
 }

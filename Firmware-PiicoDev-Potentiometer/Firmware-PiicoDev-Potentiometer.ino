@@ -35,16 +35,6 @@ enum eepromLocations {
 uint8_t oldAddress;
 
 // Hardware Connectins
-#if defined(__AVR_ATtiny806__) || defined(__AVR_ATtiny816__)
-const uint8_t powerLedPin = PIN_PC2;
-const uint16_t potentiometerPin = 0;
-
-const uint8_t addressPin1 = PIN_PA7;
-const uint8_t addressPin2 = PIN_PB5;
-const uint8_t addressPin3 = PIN_PA5;
-const uint8_t addressPin4 = PIN_PB2;
-#endif
-
 // Prototyping with Arduino Uno
 #if defined(__AVR_ATmega328P__)
   const uint8_t powerLedPin = 3;
@@ -53,7 +43,17 @@ const uint8_t addressPin4 = PIN_PB2;
   const int addressPin2 = 7;
   const int addressPin3 = 6;
   const int addressPin4 = 5;
+#else
+  // ATTINY 8x6 or 16x6
+  const uint8_t powerLedPin = PIN_PA2;
+  const uint16_t potentiometerPin = PIN_PA7;
+  
+  const uint8_t addressPin1 = PIN_PA1;
+  const uint8_t addressPin2 = PIN_PC3;
+  const uint8_t addressPin3 = PIN_PC2;
+  const uint8_t addressPin4 = PIN_PC1;
 #endif
+
 
 // System global variables
 volatile bool updateFlag = true; // Goes true when new data received. Cause LEDs to update
