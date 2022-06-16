@@ -17,7 +17,7 @@ void readPotentiometer(char *data) {
 
 void idReturn(char *data) {
   responseType = RESPONSE_VALUE;
-  loadArray((byte)valueMap.id);
+  loadArray((unsigned int)valueMap.id);
   valueMap.status |= (1 << STATUS_LAST_COMMAND_SUCCESS); //Command success
 }
 
@@ -39,17 +39,34 @@ void firmwareMinorReturn(char *data) {
   valueMap.status |= (1 << STATUS_LAST_COMMAND_SUCCESS); //Command success
 }
 
-// Control the power LED - open drain output so toggle between enable (output, low) and disable (high-impedance input)
+// Control the power LED brightness
 void setPowerLed(char *data) {
-  powerLed( (data[0] == 1) );
+//  analogWrite(powerLedPin, data[0]);
+//  valueMap.debug = data[0];
+    powerLed( (data[0] == 1) );
+  valueMap.status |= (1 << STATUS_LAST_COMMAND_SUCCESS);
 }
+
+//void powerLed(bool state) {
+//  if (state) {
+//    analogWrite(powerLedPin, 254);
+//  } else {
+//    analogWrite(powerLedPin, 0);
+//  }
+//}
+
 void powerLed(bool state) {
   if (state) {
-    pinMode(powerLedPin, OUTPUT);
-    digitalWrite(powerLedPin, HIGH);
+    digitalWrite(powerLedPin, true);
   } else {
-    pinMode(powerLedPin, INPUT);
+    digitalWrite(powerLedPin, false);
   }
+}
+
+void debugReturn(char *data) {
+  responseType = RESPONSE_VALUE;
+  loadArray(valueMap.debug);
+  valueMap.status |= (1 << STATUS_LAST_COMMAND_SUCCESS); //Command success
 }
 
 void setAddress(char *data) {

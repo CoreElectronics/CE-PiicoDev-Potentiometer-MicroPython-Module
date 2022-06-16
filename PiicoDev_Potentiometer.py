@@ -17,8 +17,10 @@ _REG_POT         = 0x05
 _REG_LED         = 0x07
 _REG_DEV_ID      = 0x11
 
+_min = min; _max = max # alias the builtin functions so we can use 'min' and 'max' as initialiser arguments
+
 class PiicoDev_Potentiometer(object):
-    def __init__(self, bus=None, freq=None, sda=None, scl=None, address=_BASE_ADDRESS, id=None):
+    def __init__(self, bus=None, freq=None, sda=None, scl=None, address=_BASE_ADDRESS, id=None, min=0.0, max=100.0):
         try:
             if compat_ind >= 1:
                 pass
@@ -28,10 +30,12 @@ class PiicoDev_Potentiometer(object):
             print(compat_str)
         self.i2c = create_unified_i2c(bus=bus, freq=freq, sda=sda, scl=scl)
         self.address = address
+        self.min = min
+        self.max = max
         a=address
         if type(id) is list and not all(v == 0 for v in id): # preference using the ID argument. ignore id if all elements zero
-            assert max(id) <= 1 and min(id) >= 0 and len(id) is 4, "id must be a list of 1/0, length=4"
-            self.addr=8+id[0]+2*id[1]+4*id[2]+8*id[3] # select address from pool
+            assert _max(id) <= 1 and _min(id) >= 0 and len(id) is 4, "id must be a list of 1/0, length=4"
+            self.address=8+id[0]+2*id[1]+4*id[2]+8*id[3] # select address from pool
         else: self.address = address # accept an integer
         try:
             self.i2c.writeto_mem(self.address, _REG_LED, b'\x01') # Initialise pwr led on
@@ -77,17 +81,14 @@ class PiicoDev_Potentiometer(object):
     def pwrLED(self, x):
         try: self.i2c.writeto_mem(self.address, _REG_LED, bytes([x])); return 0
         except: print(i2c_err_str.format(self.address)); return 1
-    
-    def readRaw(self):
+            
+    def read(self, raw=False):
         try:
-            raw = int.from_bytes(self.i2c.readfrom_mem(self.address, _REG_POT, 2),'big')
-            return raw
-        except:
-            return(float('NaN'))
-        
-    def read(self):
-        try:
-            return self.readRaw()/1023.0 * 100.0
+            raw_value = int.from_bytes(self.i2c.readfrom_mem(self.address, _REG_POT, 2),'big')
+            if raw:
+                return rawValue
+            else:
+                return round(self.min + ((self.max - self.min) / 1023) * raw_value, 1)
         except:
             return(float('NaN'))
         

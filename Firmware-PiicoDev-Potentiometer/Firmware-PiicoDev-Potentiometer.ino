@@ -18,9 +18,9 @@
 #include <avr/power.h> // For powering-down peripherals such as ADC and Timers
 
 #define FIRMWARE_MAJOR 0x01
-#define FIRMWARE_MINOR 0x01
+#define FIRMWARE_MINOR 0x00
 
-#define DEVICE_ID 0x51
+#define DEVICE_ID 379
 #define DEFAULT_I2C_ADDRESS 0x35    // The default address when all switches are off
 #define I2C_ADDRESS_POOL_START 0x08 // The start of the 'smart module address pool' minus 1 - addresses settable by switches
 #define SOFTWARE_ADDRESS true
@@ -45,7 +45,7 @@ uint8_t oldAddress;
   const int addressPin4 = 5;
 #else
   // ATTINY 8x6 or 16x6
-  const uint8_t powerLedPin = PIN_PA2;
+  const uint8_t powerLedPin = PIN_PA3;
   const uint16_t potentiometerPin = PIN_PA7;
   
   const uint8_t addressPin1 = PIN_PA1;
@@ -80,13 +80,14 @@ volatile byte responseSize = 1; //Defines how many bytes of relevant data is con
 #define STATUS_LAST_COMMAND_KNOWN 2
 
 struct memoryMap {
-  uint8_t id;
+  uint16_t id;
   uint8_t status;
   uint8_t firmwareMajor;
   uint8_t firmwareMinor;
   uint8_t i2cAddress;
   uint16_t pot;
   uint8_t led;
+  uint8_t debug;
 };
 
 // Register addresses.
@@ -98,6 +99,7 @@ const memoryMap registerMap = {
   .i2cAddress = 0x04,
   .pot = 0x05,
   .led = 0x07,
+  .debug = 0x08,
 };
 
 volatile memoryMap valueMap = {
@@ -107,7 +109,8 @@ volatile memoryMap valueMap = {
   .firmwareMinor = FIRMWARE_MINOR,
   .i2cAddress = DEFAULT_I2C_ADDRESS,
   .pot = 0x00,
-  .led = 0x01
+  .led = 0x01,
+  .debug = 0x00,
 };
 
 uint8_t currentRegisterNumber;
@@ -124,6 +127,7 @@ void firmwareMinorReturn(char *data);
 void setAddress(char *data);
 void readPotentiometer(char *data);
 void setPowerLed(char *data);
+void debugReturn(char *data);
 
 functionMap functions[] = {
   {registerMap.id, idReturn},
@@ -133,6 +137,7 @@ functionMap functions[] = {
   {registerMap.i2cAddress, setAddress},
   {registerMap.pot, readPotentiometer},
   {registerMap.led, setPowerLed},
+  {registerMap.debug, debugReturn},
 };
 
 
@@ -143,14 +148,35 @@ void setup() {
   Serial.begin(115200);
   Serial.println("Begin");
 #endif
-
   // Pull up address pins
   pinMode(addressPin1, INPUT_PULLUP);
   pinMode(addressPin2, INPUT_PULLUP);
   pinMode(addressPin3, INPUT_PULLUP);
   pinMode(addressPin4, INPUT_PULLUP);
   pinMode(powerLedPin, OUTPUT);
+  //analogWrite(powerLedPin, 254);
   powerLed(true); // enable Power LED by default on every power-up
+
+  /*
+  // ToDo remove debugging
+  analogWrite(powerLedPin, 0);
+  delay(500);
+  analogWrite(powerLedPin, 126);
+  delay(500);
+    analogWrite(powerLedPin, 0);
+  delay(500);
+  analogWrite(powerLedPin, 127);
+  delay(500);
+    analogWrite(powerLedPin, 0);
+  delay(500);
+  analogWrite(powerLedPin, 255);
+  delay(500);
+  analogWrite(powerLedPin, 0);
+  delay(500);
+
+
+  powerLed(true);
+  */
 
   set_sleep_mode(SLEEP_MODE_IDLE);
   sleep_enable();
@@ -166,7 +192,7 @@ void loop() {
     startI2C(); // reinitialise I2C with new address, update EEPROM with custom address as necessary
     updateFlag = false;
   }
-  sleep_mode();
+//  sleep_mode();
 }
 
 
