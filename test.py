@@ -1,24 +1,19 @@
 from PiicoDev_Potentiometer import PiicoDev_Potentiometer
 from PiicoDev_Unified import sleep_ms
  
-pot = PiicoDev_Potentiometer(min=0.0, max=100.0)   # Initialise the RFID module
+pot = PiicoDev_Potentiometer(address=0x35, min=0.0, max=100.0)   # Initialise the RFID module
 
 while True:
-    print('Firmware------')
-    print(pot.readFirmware())
-    print('Firmware------')
-#     print(pot.read())
-#     print(pot.readStatus())
-
-    print('power LED set')
-    print('Firmware------2')
-    print(pot.readFirmware())
-    print('Firmware------2')
-    
-    print(pot.readDebug())
-    for x in range(255):
-        pot.pwrLED(1)
-        sleep_ms(256-x)
+    firmware = pot.readFirmware()
+    print('Firmware: ' + str(firmware[0]) + '.' + str(firmware[1]))
+    print('ID: ' + str(pot.readID()))
+    print('Last Command Known: ' + str(pot.last_command_known))
+    print('Last Command Success: ' + str(pot.last_command_success))
+    print('Flashing LED 3 times')
+    for x in range(3):
         pot.pwrLED(0)
-        sleep_ms(256-x)
-    sleep_ms(1000)
+        sleep_ms(500)
+        pot.pwrLED(1)
+        sleep_ms(500)
+    print(pot.read())
+    #pot.setI2Caddr(0x20)
