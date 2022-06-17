@@ -56,14 +56,14 @@ void powerLed(bool state) {
 void debugReturn(char *data) {
   responseType = RESPONSE_VALUE;
   loadArray(valueMap.debug);
-  valueMap.status |= (1 << STATUS_LAST_COMMAND_SUCCESS); //Command success
+  valueMap.status |= (1 << STATUS_LAST_COMMAND_SUCCESS);
 }
 
 void setAddress(char *data) {
   uint8_t tempAddress = data[0];
 
   if (tempAddress < 0x08 || tempAddress > 0x77)
-    return; //Command failed. This address is out of bounds.
+    return; // Command failed. This address is out of bounds.
   valueMap.i2cAddress = tempAddress;
 
   EEPROM.put(LOCATION_ADDRESS_TYPE, SOFTWARE_ADDRESS);
@@ -71,7 +71,7 @@ void setAddress(char *data) {
   updateFlag = true; // will trigger a I2C re-initalise and save custom address to EEPROM
 }
 
-//Loads a long into the start of the responseBuffer
+// Functions to load data into the response buffer
 void loadArray(uint8_t myNumber)
 {
   for (uint8_t x = 0 ; x < sizeof(myNumber) ; x++)
