@@ -97,7 +97,7 @@ class PiicoDev_Potentiometer(object):
         return x
 
     def pwrLED(self, x):
-        self._writeInt(_REG_LED, x, 1); return 0
+        self._writeInt(_REG_LED, int(x)); return 0
             
     def read(self, raw=False):
         raw_value = self._readInt(_REG_POT, 2)
