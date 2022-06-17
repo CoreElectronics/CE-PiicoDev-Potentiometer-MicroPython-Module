@@ -24,7 +24,7 @@ void readSystemSettings(void)
 void recordSystemSettings(void)
 {
   //I2C address is byte
-  byte i2cAddr;
+  uint8_t i2cAddr;
 
   //Error check the current I2C address
   if (valueMap.i2cAddress >= 0x08 && valueMap.i2cAddress <= 0x77) {
@@ -33,7 +33,7 @@ void recordSystemSettings(void)
     EEPROM.get(LOCATION_I2C_ADDRESS, i2cAddr);
     if (i2cAddr != valueMap.i2cAddress)
     {
-      EEPROM.put(LOCATION_I2C_ADDRESS, (byte)valueMap.i2cAddress);
+      EEPROM.put(LOCATION_I2C_ADDRESS, (uint8_t)valueMap.i2cAddress);
     }
   } else {
     EEPROM.get(LOCATION_I2C_ADDRESS, i2cAddr);

@@ -11,49 +11,39 @@ void readPotentiometer(char *data) {
   #endif
   valueMap.pot = analogRead(potentiometerPin);
   responseType = RESPONSE_VALUE;
-  loadArray((unsigned int)valueMap.pot);
-  valueMap.status |= (1 << STATUS_LAST_COMMAND_SUCCESS); //Command success
+  loadArray((uint16_t)valueMap.pot);
+  valueMap.status |= (1 << STATUS_LAST_COMMAND_SUCCESS);
 }
 
 void idReturn(char *data) {
   responseType = RESPONSE_VALUE;
-  loadArray((unsigned int)valueMap.id);
-  valueMap.status |= (1 << STATUS_LAST_COMMAND_SUCCESS); //Command success
+  loadArray((uint16_t)valueMap.id);
+  valueMap.status |= (1 << STATUS_LAST_COMMAND_SUCCESS);
 }
 
 void statusReturn(char *data) {
-  responseType = RESPONSE_VALUE;
-  loadArray((byte)valueMap.status);
-  valueMap.status |= (1 << STATUS_LAST_COMMAND_SUCCESS); //Command successful. Set status bit.
+  responseType = RESPONSE_STATUS;
+  loadArray((uint8_t)valueMap.status);
+  valueMap.status |= (1 << STATUS_LAST_COMMAND_SUCCESS);
 }
 
 void firmwareMajorReturn(char *data) {
   responseType = RESPONSE_VALUE;
-  loadArray((byte)valueMap.firmwareMajor);
-  valueMap.status |= (1 << STATUS_LAST_COMMAND_SUCCESS); //Command success
+  loadArray((uint8_t)valueMap.firmwareMajor);
+  valueMap.status |= (1 << STATUS_LAST_COMMAND_SUCCESS);
 }
 
 void firmwareMinorReturn(char *data) {
   responseType = RESPONSE_VALUE;
-  loadArray((byte)valueMap.firmwareMinor);
-  valueMap.status |= (1 << STATUS_LAST_COMMAND_SUCCESS); //Command success
-}
-
-// Control the power LED brightness
-void setPowerLed(char *data) {
-//  analogWrite(powerLedPin, data[0]);
-//  valueMap.debug = data[0];
-    powerLed( (data[0] == 1) );
+  loadArray((uint8_t)valueMap.firmwareMinor);
   valueMap.status |= (1 << STATUS_LAST_COMMAND_SUCCESS);
 }
 
-//void powerLed(bool state) {
-//  if (state) {
-//    analogWrite(powerLedPin, 254);
-//  } else {
-//    analogWrite(powerLedPin, 0);
-//  }
-//}
+// Control the power LED
+void setPowerLed(char *data) {
+  powerLed( (data[0] == 1) );
+  valueMap.status |= (1 << STATUS_LAST_COMMAND_SUCCESS);
+}
 
 void powerLed(bool state) {
   if (state) {
@@ -70,7 +60,7 @@ void debugReturn(char *data) {
 }
 
 void setAddress(char *data) {
-  byte tempAddress = data[0];
+  uint8_t tempAddress = data[0];
 
   if (tempAddress < 0x08 || tempAddress > 0x77)
     return; //Command failed. This address is out of bounds.
@@ -81,48 +71,17 @@ void setAddress(char *data) {
   updateFlag = true; // will trigger a I2C re-initalise and save custom address to EEPROM
 }
 
-
 //Loads a long into the start of the responseBuffer
-void loadArray(unsigned long myNumber)
+void loadArray(uint8_t myNumber)
 {
-  for (byte x = 0 ; x < sizeof(myNumber) ; x++)
+  for (uint8_t x = 0 ; x < sizeof(myNumber) ; x++)
     responseBuffer[x] = (myNumber >> (((sizeof(myNumber) - 1) - x) * 8)) & 0xFF;
   responseSize = sizeof(myNumber);
 }
 
-void loadArray(long myNumber)
+void loadArray(uint16_t myNumber)
 {
-  for (byte x = 0 ; x < sizeof(myNumber) ; x++)
+  for (uint8_t x = 0 ; x < sizeof(myNumber) ; x++)
     responseBuffer[x] = (myNumber >> (((sizeof(myNumber) - 1) - x) * 8)) & 0xFF;
   responseSize = sizeof(myNumber);
-}
-
-//Loads an int into the start of the responseBuffer
-void loadArray(int myNumber)
-{
-  for (byte x = 0 ; x < sizeof(myNumber) ; x++)
-    responseBuffer[x] = (myNumber >> (((sizeof(myNumber) - 1) - x) * 8)) & 0xFF;
-  responseSize = sizeof(myNumber);
-}
-
-void loadArray(unsigned int myNumber)
-{
-  for (byte x = 0 ; x < sizeof(myNumber) ; x++)
-    responseBuffer[x] = (myNumber >> (((sizeof(myNumber) - 1) - x) * 8)) & 0xFF;
-  responseSize = sizeof(myNumber);
-}
-
-//Loads an byte into the start of the responseBuffer
-void loadArray(byte myNumber)
-{
-  for (byte x = 0 ; x < sizeof(myNumber) ; x++)
-    responseBuffer[x] = (myNumber >> (((sizeof(myNumber) - 1) - x) * 8)) & 0xFF;
-  responseSize = sizeof(myNumber);
-}
-
-//Loads a bool into the start of the responseBuffer
-void loadArray(boolean myStatus)
-{
-  responseBuffer[0] = myStatus;
-  responseSize = sizeof(myStatus);
 }

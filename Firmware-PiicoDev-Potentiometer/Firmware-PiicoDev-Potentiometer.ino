@@ -1,15 +1,17 @@
 /*
  * PiicoDev Potentiometer Firmware
  * Written by Peter Johnston @ Core Electronics
- * Based off the Qwiic Button Project https://github.com/sparkfun/Qwiic_Button
+ * Based off the Core Electronics Buzzer module https://github.com/CoreElectronics/CE-PiicoDev-Buzzer-MicroPython-Module
  * Date: MARCH 2022
- * An I2C based module that reads the PiicoDev Potentiometer
+ * An I2C based module that reads PiicoDev Potentiometers
  *
- * Feel like supporting PiicoDev? Buy a module here: https://core-electronics.com.au/catalog/product/view/sku/CE08463
+ * Feel like supporting PiicoDev? Buy a module here: 
+ * Rotory Potentiometer: https://core-electronics.com.au/catalog/product/view/sku/CE08463
+ * Slide Potentiometer:  https://core-electronics.com.au/catalog/product/view/sku/CE08502
  *
  */
 
-#define DEBUG 1
+#define DEBUG 0
 
 #include <Wire.h>
 #include <EEPROM.h>
@@ -39,10 +41,10 @@ uint8_t oldAddress;
 #if defined(__AVR_ATmega328P__)
   const uint8_t powerLedPin = 3;
   const uint16_t potentiometerPin = 0;
-  const int addressPin1 = 8;
-  const int addressPin2 = 7;
-  const int addressPin3 = 6;
-  const int addressPin4 = 5;
+  const uint16_t addressPin1 = 8;
+  const uint16_t addressPin2 = 7;
+  const uint16_t addressPin3 = 6;
+  const uint16_t addressPin4 = 5;
 #else
   // ATTINY 8x6 or 16x6
   const uint8_t powerLedPin = PIN_PA3;
@@ -57,24 +59,24 @@ uint8_t oldAddress;
 
 // System global variables
 volatile bool updateFlag = true; // Goes true when new data received. Cause LEDs to update
-volatile unsigned long lastSyncTime = 0;
+volatile uint32_t lastSyncTime = 0;
 
 // volatile uint16_t frequency = 0;
 // volatile uint16_t duration = 0;
 
 #define LOCAL_BUFFER_SIZE 20 // bytes
-byte incomingData[LOCAL_BUFFER_SIZE]; //Local buffer to record I2C bytes before committing to file, add 1 for 0 character on end
-volatile int incomingDataSpot = 0; //Keeps track of where we are in the incoming buffer
+uint8_t incomingData[LOCAL_BUFFER_SIZE]; // Local buffer to record I2C bytes before committing to file, add 1 for 0 character on end
+volatile uint16_t incomingDataSpot = 0; // Keeps track of where we are in the incoming buffer
 
 //These are the different types of data the device can respond with
 enum Response {
-  RESPONSE_STATUS, //1 byte containing status bits
-  RESPONSE_VALUE, //Value byte containing measurements etc.
+  RESPONSE_STATUS, // 1 byte containing status bits
+  RESPONSE_VALUE, // Value byte containing measurements etc.
 };
 
-volatile Response responseType = RESPONSE_STATUS; //State engine that let's us know what the master is asking for
-byte responseBuffer[I2C_BUFFER_SIZE]; //Used to pass data back to master
-volatile byte responseSize = 1; //Defines how many bytes of relevant data is contained in the responseBuffer
+volatile Response responseType = RESPONSE_STATUS; // State engine that let's us know what the master is asking for
+uint8_t responseBuffer[I2C_BUFFER_SIZE]; // Used to pass data back to master
+volatile uint8_t responseSize = 1; // Defines how many bytes of relevant data is contained in the responseBuffer
 
 #define STATUS_LAST_COMMAND_SUCCESS 1
 #define STATUS_LAST_COMMAND_KNOWN 2
@@ -116,7 +118,7 @@ volatile memoryMap valueMap = {
 uint8_t currentRegisterNumber;
 
 struct functionMap {
-  byte registerNumber;
+  uint8_t registerNumber;
   void (*handleFunction)(char *myData);
 };
 
@@ -140,8 +142,6 @@ functionMap functions[] = {
   {registerMap.debug, debugReturn},
 };
 
-
-
 void setup() {
 
 #if DEBUG
@@ -154,29 +154,7 @@ void setup() {
   pinMode(addressPin3, INPUT_PULLUP);
   pinMode(addressPin4, INPUT_PULLUP);
   pinMode(powerLedPin, OUTPUT);
-  //analogWrite(powerLedPin, 254);
   powerLed(true); // enable Power LED by default on every power-up
-
-  /*
-  // ToDo remove debugging
-  analogWrite(powerLedPin, 0);
-  delay(500);
-  analogWrite(powerLedPin, 126);
-  delay(500);
-    analogWrite(powerLedPin, 0);
-  delay(500);
-  analogWrite(powerLedPin, 127);
-  delay(500);
-    analogWrite(powerLedPin, 0);
-  delay(500);
-  analogWrite(powerLedPin, 255);
-  delay(500);
-  analogWrite(powerLedPin, 0);
-  delay(500);
-
-
-  powerLed(true);
-  */
 
   set_sleep_mode(SLEEP_MODE_IDLE);
   sleep_enable();
@@ -184,7 +162,6 @@ void setup() {
 
   startI2C();          //Determine the I2C address we should be using and begin listening on I2C bus
   oldAddress = valueMap.i2cAddress;
-
 }
 
 void loop() {
@@ -192,13 +169,10 @@ void loop() {
     startI2C(); // reinitialise I2C with new address, update EEPROM with custom address as necessary
     updateFlag = false;
   }
-//  sleep_mode();
+  sleep_mode();
 }
 
-
-
-
-//Begin listening on I2C bus as I2C slave using the global variable valueMap.i2cAddress
+// Begin listening on I2C bus as I2C slave using the global variable valueMap.i2cAddress
 // ToDo don't use globals ie. pass in value map =>  void startI2C(memoryMap *map)
 void startI2C()
 {
@@ -222,25 +196,25 @@ void startI2C()
   #endif
   if (switchPositions != 0) IOaddress = I2C_ADDRESS_POOL_START + switchPositions; // use the "smart-module address pool" when any hardware address is set
 
-  //If any of the address jumpers are set, we use jumpers
+  // If any of the address jumpers are set, we use jumpers
   if ((IOaddress != DEFAULT_I2C_ADDRESS) || (addressType == HARDWARE_ADDRESS))
   {
     address = IOaddress;
     EEPROM.put(LOCATION_ADDRESS_TYPE, HARDWARE_ADDRESS);
   }
-  //If none of the address jumpers are set, we use registerMap (but check to make sure that the value is legal first)
+  // If none of the address jumpers are set, we use registerMap (but check to make sure that the value is legal first)
   else
   {
-    //if the value is legal, then set it
+    // if the value is legal, then set it
     if (valueMap.i2cAddress > 0x07 && valueMap.i2cAddress < 0x78)
       address = valueMap.i2cAddress;
 
-    //if the value is illegal, default to the default I2C address for our platform
+    // if the value is illegal, default to the default I2C address for our platform
     else
       address = DEFAULT_I2C_ADDRESS;
   }
 
-  //save new address to the register map
+  // save new address to the register map
   valueMap.i2cAddress = address;
   #if DEBUG
     Serial.print("I2C Address:");
@@ -248,11 +222,11 @@ void startI2C()
   #endif
   recordSystemSettings(); // save the new address to EEPROM
 
-  //reconfigure Wire instance
+  // reconfigure Wire instance
   Wire.end();          //stop I2C on old address
   Wire.begin(address); //rejoin the I2C bus on new address
 
-  //The connections to the interrupts are severed when a Wire.begin occurs, so here we reattach them
+  // The connections to the interrupts are severed when a Wire.begin occurs, so here we reattach them
   Wire.onReceive(receiveEvent);
   Wire.onRequest(requestEvent);
 }

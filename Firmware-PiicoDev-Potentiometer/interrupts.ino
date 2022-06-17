@@ -1,6 +1,6 @@
 // Executes when data is received on I2C
 // this function is registered as an event, see setup() and/or startI2C()
-void receiveEvent(int numberOfBytesReceived)
+void receiveEvent(uint16_t numberOfBytesReceived)
 {
   lastSyncTime = millis();
   incomingDataSpot = 0;
@@ -18,7 +18,7 @@ void receiveEvent(int numberOfBytesReceived)
       #endif
     }
   }
-  for (int regNum = 0; regNum < (sizeof(memoryMap) / sizeof(byte)); regNum++)
+  for (uint16_t regNum = 0; regNum < (sizeof(memoryMap) / sizeof(uint8_t)); regNum++)
   {
     if (functions[regNum].registerNumber == currentRegisterNumber)
     {
