@@ -83,36 +83,36 @@ volatile uint8_t responseSize = 1; // Defines how many bytes of relevant data is
 
 struct memoryMap {
   uint16_t id;
-  uint8_t status;
   uint8_t firmwareMajor;
   uint8_t firmwareMinor;
   uint8_t i2cAddress;
   uint16_t pot;
   uint8_t led;
   uint8_t debug;
+  uint8_t ledWrite;
 };
 
 // Register addresses.
 const memoryMap registerMap = {
   .id = 0x11,
-  .status = 0x01,
   .firmwareMajor = 0x02,
   .firmwareMinor = 0x03,
   .i2cAddress = 0x04,
   .pot = 0x05,
   .led = 0x07,
   .debug = 0x08,
+  .ledWrite = 0x87,
 };
 
 volatile memoryMap valueMap = {
   .id = DEVICE_ID,
-  .status = 0x00,
   .firmwareMajor = FIRMWARE_MAJOR,
   .firmwareMinor = FIRMWARE_MINOR,
   .i2cAddress = DEFAULT_I2C_ADDRESS,
   .pot = 0x00,
   .led = 0x01,
   .debug = 0x00,
+  .ledWrite = 0x01
 };
 
 uint8_t currentRegisterNumber;
@@ -123,23 +123,23 @@ struct functionMap {
 };
 
 void idReturn(char *data);
-void statusReturn(char *data);
 void firmwareMajorReturn(char *data);
 void firmwareMinorReturn(char *data);
 void setAddress(char *data);
 void readPotentiometer(char *data);
-void setPowerLed(char *data);
+void getPowerLed(char *data);
 void debugReturn(char *data);
+void setPowerLed(char *data);
 
 functionMap functions[] = {
   {registerMap.id, idReturn},
-  {registerMap.status, statusReturn},
   {registerMap.firmwareMajor, firmwareMajorReturn},
   {registerMap.firmwareMinor, firmwareMinorReturn},
   {registerMap.i2cAddress, setAddress},
   {registerMap.pot, readPotentiometer},
-  {registerMap.led, setPowerLed},
+  {registerMap.led, getPowerLed},
   {registerMap.debug, debugReturn},
+  {registerMap.ledWrite, setPowerLed},
 };
 
 void setup() {

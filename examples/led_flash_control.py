@@ -1,12 +1,12 @@
 from PiicoDev_Potentiometer import PiicoDev_Potentiometer
 from PiicoDev_Unified import sleep_ms
  
-pot = PiicoDev_Potentiometer(min=300, max=50)   # Initialise the module
+pot = PiicoDev_Potentiometer(minimum=300, maximum=50)   # Initialise the module
 
 while True:
-    value = int(pot.read())
+    value = int(pot.value)
     print('Value: ' + str(value))
-    pot.pwrLED(False)
+    pot.led = False
     sleep_ms(value)
-    pot.pwrLED(True)
+    pot.led = True
     sleep_ms(value)

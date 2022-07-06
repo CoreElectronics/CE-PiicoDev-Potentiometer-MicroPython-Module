@@ -7,29 +7,100 @@ This module depends on the [PiicoDev Unified Library](https://github.com/CoreEle
 
 # Reference
 
-## Initialisation
+## Initialisation `PiicoDev_Potentiometer(bus=, freq=, sda=, scl=, address=0x35, id=, minimum=0.0, maximum=100.0)`
+Parameter | Type | Range | Default | Description
+--- | --- | --- | --- | ---
+bus | int | 0,1 | Raspberry Pi Pico: 0, Raspberry Pi: 1 | I2C Bus.  Ignored on Micro:bit
+freq | int | 100 to 1000000 | Device dependent | I2C Bus frequency (Hz).  Ignored on Raspberry Pi
+sda | Pin | Device Dependent | Device Dependent | I2C SDA Pin. Implemented on Raspberry Pi Pico only
+scl | Pin | Device Dependent | Device Dependent | I2C SCL Pin. Implemented on Raspberry Pi Pico only
+address | int | 0x35 | 0x35, 0x08 - 0x77 | Manually specify the address of the connected device. For when a software address is set on the device.
+ID | List[int, int, int, int] | 1=ON, 0=OFF | [0,0,0,0] | Hardware switches change the device address - Abstracts the need for user to look up an address, simply input the switch positions. Alternatively, use `address` for explicit address.
+minimum | float | -1.797*10^308 to 1.797*10^308 | 0.0 | The value that the pot returns at it's minimum *travel*
+maximum | float | -1.797*10^308 to 1.797*10^308  | 100.0 | The value that the pot returns at it's maximum *travel*
+
+**Example Usage**
+
+Initialise the potentiometer with a default range 0.0 - 1.0
+
 ```python
-pot = PiicoDev_Potentiometer(min=0.0, max=100.0)
+pot = PiicoDev_Potentiometer(minimum=0.0, maximum=1.0)
 ```
 
-## read(raw=False)
-Return a float between 0.0 and 100.0 (default) or a value from a user-defined scale
-Returns the raw ADC value when `raw=True`
+Initialise the potentiometer with address switch ASW(1 to 4) configuration [1,0,1,0]
 
-## setRange(min,max)
-sets the potentiometer scale where `min`/`max` is the value that the pot returns at it's minimum/maximum *travel* ie:
 ```python
-PiicoDev_Potentiometer.setRange(0.0, 100.0) # would be the default settings
-PiicoDev_Potentiometer.setRange(100.0, 0.0) # reverses the direction of the pot
-PiicoDev_Potentiometer.setRange(0.0, 1.0) # creates a 0->1 value
+pot = PiicoDev_Potentiometer(asw=[1,0,1,0])
 ```
 
-## Control onboard LED
+## Properties
 
-## Read Device ID
+### `.value`
+Returns a float between 0.0 and 100.0 (default) or a value from a user-defined scale
 
-## Change I2C address
+**Example Usage**
+```python
+value = pot.value
+```
 
+
+### `.raw`
+Returns the raw ADC value
+
+**Example Usage**
+```python
+raw_value = pot.raw
+```
+
+### `.minimum` and `.maximum`
+Returns/Sets the potentiometer scale where `min`/`max` is the value that the pot returns at it's minimum/maximum *travel*
+
+**Example Usage**
+```python
+# Set the full output range to [-1:1]
+pot.minimum = -1
+pot.maximum = 1
+```
+
+### `.led`
+Returns/controls the state onboard "Power" LED. accepts `True` / `False`
+
+**Example Usage**
+```python
+pot.led = False # turn the LED off
+```
+
+### `.address`
+Returns the currently configured 7-bit I2C address
+
+**Example Usage**
+```python
+a = pot.address
+```
+
+### `.whoami`
+Returns the device identifier.  Will always return 379.
+
+**Example Usage**
+```python
+deviceID = pot.whoami
+```
+
+### `.firmware`
+Returns the major version, minor version
+```python
+firmware = pot.firmware
+```
+
+## Methods
+
+### `setI2Caddr(a)`
+Set a new 7-bit I2C address (0x08 to 0x77)
+
+**Example Usage**
+```python
+pot.setI2Caddr(0x45)
+```
 
 
 # License

@@ -21,12 +21,6 @@ void idReturn(char *data) {
   valueMap.status |= (1 << STATUS_LAST_COMMAND_SUCCESS);
 }
 
-void statusReturn(char *data) {
-  responseType = RESPONSE_STATUS;
-  loadArray((uint8_t)valueMap.status);
-  valueMap.status |= (1 << STATUS_LAST_COMMAND_SUCCESS);
-}
-
 void firmwareMajorReturn(char *data) {
   responseType = RESPONSE_VALUE;
   loadArray((uint8_t)valueMap.firmwareMajor);
@@ -36,6 +30,14 @@ void firmwareMajorReturn(char *data) {
 void firmwareMinorReturn(char *data) {
   responseType = RESPONSE_VALUE;
   loadArray((uint8_t)valueMap.firmwareMinor);
+  valueMap.status |= (1 << STATUS_LAST_COMMAND_SUCCESS);
+}
+
+// Control the power LED
+void getPowerLed(char *data) {
+  responseType = RESPONSE_VALUE;
+  valueMap.led = digitalRead(powerLedPin);
+  loadArray((uint8_t)valueMap.led);
   valueMap.status |= (1 << STATUS_LAST_COMMAND_SUCCESS);
 }
 
