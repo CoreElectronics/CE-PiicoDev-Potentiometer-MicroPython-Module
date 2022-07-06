@@ -48,7 +48,6 @@ uint8_t oldAddress;
   // ATTINY 8x6 or 16x6
   const uint8_t powerLedPin = PIN_PA3;
   const uint16_t potentiometerPin = PIN_PA7;
-  
   const uint8_t addressPin1 = PIN_PA1;
   const uint8_t addressPin2 = PIN_PC3;
   const uint8_t addressPin3 = PIN_PC2;
@@ -63,13 +62,6 @@ volatile uint32_t lastSyncTime = 0;
 uint8_t incomingData[LOCAL_BUFFER_SIZE]; // Local buffer to record I2C bytes before committing to file, add 1 for 0 character on end
 volatile uint16_t incomingDataSpot = 0; // Keeps track of where we are in the incoming buffer
 
-//These are the different types of data the device can respond with
-enum Response {
-  RESPONSE_STATUS, // 1 byte containing status bits
-  RESPONSE_VALUE, // Value byte containing measurements etc.
-};
-
-volatile Response responseType = RESPONSE_STATUS; // State engine that let's us know what the master is asking for
 uint8_t responseBuffer[I2C_BUFFER_SIZE]; // Used to pass data back to master
 volatile uint8_t responseSize = 1; // Defines how many bytes of relevant data is contained in the responseBuffer
 
@@ -130,7 +122,6 @@ functionMap functions[] = {
 };
 
 void setup() {
-
 #if DEBUG
   Serial.begin(115200);
   Serial.println("Begin");
@@ -142,11 +133,9 @@ void setup() {
   pinMode(addressPin4, INPUT_PULLUP);
   pinMode(powerLedPin, OUTPUT);
   powerLed(true); // enable Power LED by default on every power-up
-
   set_sleep_mode(SLEEP_MODE_IDLE);
   sleep_enable();
   readSystemSettings(); //Load all system settings from EEPROM
-
   startI2C();          //Determine the I2C address we should be using and begin listening on I2C bus
   oldAddress = valueMap.i2cAddress;
 }

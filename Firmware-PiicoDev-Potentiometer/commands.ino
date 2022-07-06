@@ -10,28 +10,23 @@ void readPotentiometer(char *data) {
     Serial.println(analogRead(potentiometerPin));
   #endif
   valueMap.pot = analogRead(potentiometerPin);
-  responseType = RESPONSE_VALUE;
   loadArray((uint16_t)valueMap.pot);
 }
 
 void idReturn(char *data) {
-  responseType = RESPONSE_VALUE;
   loadArray((uint16_t)valueMap.id);
 }
 
 void firmwareMajorReturn(char *data) {
-  responseType = RESPONSE_VALUE;
   loadArray((uint8_t)valueMap.firmwareMajor);
 }
 
 void firmwareMinorReturn(char *data) {
-  responseType = RESPONSE_VALUE;
   loadArray((uint8_t)valueMap.firmwareMinor);
 }
 
 // Control the power LED
 void getPowerLed(char *data) {
-  responseType = RESPONSE_VALUE;
   valueMap.led = digitalRead(powerLedPin);
   loadArray((uint8_t)valueMap.led);
 }

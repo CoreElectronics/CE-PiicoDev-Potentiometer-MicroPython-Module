@@ -29,22 +29,5 @@ void receiveEvent(uint16_t numberOfBytesReceived)
 
 void requestEvent() {
   lastSyncTime = millis();
-  switch (responseType)
-  {
-    case RESPONSE_STATUS:
-
-      // Once read, clear the last command known and last command success bits
-      break;
-
-    case RESPONSE_VALUE:
-      // Respond to other queries eg. firmware version, device ID
-      Wire.write(responseBuffer, responseSize);
-
-      responseType = RESPONSE_STATUS; //Return to default state
-      break;
-
-    default:
-      Wire.write(0x80); //Unknown response state
-      break;
-  }
+  Wire.write(responseBuffer, responseSize);
 }
