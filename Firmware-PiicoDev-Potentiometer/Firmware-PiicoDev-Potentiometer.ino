@@ -21,7 +21,6 @@
 
 #define FIRMWARE_MAJOR 0x01
 #define FIRMWARE_MINOR 0x00
-
 #define DEVICE_ID 379
 #define DEFAULT_I2C_ADDRESS 0x35    // The default address when all switches are off
 #define I2C_ADDRESS_POOL_START 0x08 // The start of the 'smart module address pool' minus 1 - addresses settable by switches
@@ -56,13 +55,9 @@ uint8_t oldAddress;
   const uint8_t addressPin4 = PIN_PC1;
 #endif
 
-
 // System global variables
 volatile bool updateFlag = true; // Goes true when new data received. Cause LEDs to update
 volatile uint32_t lastSyncTime = 0;
-
-// volatile uint16_t frequency = 0;
-// volatile uint16_t duration = 0;
 
 #define LOCAL_BUFFER_SIZE 20 // bytes
 uint8_t incomingData[LOCAL_BUFFER_SIZE]; // Local buffer to record I2C bytes before committing to file, add 1 for 0 character on end
@@ -78,9 +73,6 @@ volatile Response responseType = RESPONSE_STATUS; // State engine that let's us 
 uint8_t responseBuffer[I2C_BUFFER_SIZE]; // Used to pass data back to master
 volatile uint8_t responseSize = 1; // Defines how many bytes of relevant data is contained in the responseBuffer
 
-#define STATUS_LAST_COMMAND_SUCCESS 1
-#define STATUS_LAST_COMMAND_KNOWN 2
-
 struct memoryMap {
   uint16_t id;
   uint8_t firmwareMajor;
@@ -88,7 +80,6 @@ struct memoryMap {
   uint8_t i2cAddress;
   uint16_t pot;
   uint8_t led;
-  uint8_t debug;
   uint8_t ledWrite;
 };
 
@@ -100,7 +91,6 @@ const memoryMap registerMap = {
   .i2cAddress = 0x04,
   .pot = 0x05,
   .led = 0x07,
-  .debug = 0x08,
   .ledWrite = 0x87,
 };
 
@@ -111,7 +101,6 @@ volatile memoryMap valueMap = {
   .i2cAddress = DEFAULT_I2C_ADDRESS,
   .pot = 0x00,
   .led = 0x01,
-  .debug = 0x00,
   .ledWrite = 0x01
 };
 
@@ -128,7 +117,6 @@ void firmwareMinorReturn(char *data);
 void setAddress(char *data);
 void readPotentiometer(char *data);
 void getPowerLed(char *data);
-void debugReturn(char *data);
 void setPowerLed(char *data);
 
 functionMap functions[] = {
@@ -138,7 +126,6 @@ functionMap functions[] = {
   {registerMap.i2cAddress, setAddress},
   {registerMap.pot, readPotentiometer},
   {registerMap.led, getPowerLed},
-  {registerMap.debug, debugReturn},
   {registerMap.ledWrite, setPowerLed},
 };
 

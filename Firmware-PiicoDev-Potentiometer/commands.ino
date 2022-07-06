@@ -49,11 +49,6 @@ void powerLed(bool state) {
   }
 }
 
-void debugReturn(char *data) {
-  responseType = RESPONSE_VALUE;
-  loadArray(valueMap.debug);
-}
-
 void setAddress(char *data) {
   uint8_t tempAddress = data[0];
 
