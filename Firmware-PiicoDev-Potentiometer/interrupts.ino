@@ -22,8 +22,6 @@ void receiveEvent(uint16_t numberOfBytesReceived)
   {
     if (functions[regNum].registerNumber == currentRegisterNumber)
     {
-      valueMap.status &= ~(1 << STATUS_LAST_COMMAND_SUCCESS); //Assume command failed
-      valueMap.status |= (1 << STATUS_LAST_COMMAND_KNOWN); //Assume command is known
       functions[regNum].handleFunction(incomingData);
     }
   }
@@ -34,12 +32,8 @@ void requestEvent() {
   switch (responseType)
   {
     case RESPONSE_STATUS:
-      // Respond with the system status byte
-      Wire.write(valueMap.status);
 
       // Once read, clear the last command known and last command success bits
-      valueMap.status &= ~(1 << STATUS_LAST_COMMAND_SUCCESS);
-      valueMap.status &= ~(1 << STATUS_LAST_COMMAND_KNOWN);
       break;
 
     case RESPONSE_VALUE:

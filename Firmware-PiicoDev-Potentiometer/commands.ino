@@ -12,25 +12,21 @@ void readPotentiometer(char *data) {
   valueMap.pot = analogRead(potentiometerPin);
   responseType = RESPONSE_VALUE;
   loadArray((uint16_t)valueMap.pot);
-  valueMap.status |= (1 << STATUS_LAST_COMMAND_SUCCESS);
 }
 
 void idReturn(char *data) {
   responseType = RESPONSE_VALUE;
   loadArray((uint16_t)valueMap.id);
-  valueMap.status |= (1 << STATUS_LAST_COMMAND_SUCCESS);
 }
 
 void firmwareMajorReturn(char *data) {
   responseType = RESPONSE_VALUE;
   loadArray((uint8_t)valueMap.firmwareMajor);
-  valueMap.status |= (1 << STATUS_LAST_COMMAND_SUCCESS);
 }
 
 void firmwareMinorReturn(char *data) {
   responseType = RESPONSE_VALUE;
   loadArray((uint8_t)valueMap.firmwareMinor);
-  valueMap.status |= (1 << STATUS_LAST_COMMAND_SUCCESS);
 }
 
 // Control the power LED
@@ -38,13 +34,11 @@ void getPowerLed(char *data) {
   responseType = RESPONSE_VALUE;
   valueMap.led = digitalRead(powerLedPin);
   loadArray((uint8_t)valueMap.led);
-  valueMap.status |= (1 << STATUS_LAST_COMMAND_SUCCESS);
 }
 
 // Control the power LED
 void setPowerLed(char *data) {
   powerLed( (data[0] == 1) );
-  valueMap.status |= (1 << STATUS_LAST_COMMAND_SUCCESS);
 }
 
 void powerLed(bool state) {
@@ -58,7 +52,6 @@ void powerLed(bool state) {
 void debugReturn(char *data) {
   responseType = RESPONSE_VALUE;
   loadArray(valueMap.debug);
-  valueMap.status |= (1 << STATUS_LAST_COMMAND_SUCCESS);
 }
 
 void setAddress(char *data) {
@@ -69,7 +62,6 @@ void setAddress(char *data) {
   valueMap.i2cAddress = tempAddress;
 
   EEPROM.put(LOCATION_ADDRESS_TYPE, SOFTWARE_ADDRESS);
-  valueMap.status |= (1 << STATUS_LAST_COMMAND_SUCCESS);
   updateFlag = true; // will trigger a I2C re-initalise and save custom address to EEPROM
 }
 
