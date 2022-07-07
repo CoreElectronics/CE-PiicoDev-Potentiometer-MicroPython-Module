@@ -3,7 +3,6 @@
 # 2022 APR 06 - Initial release
 
 from PiicoDev_Unified import *
-from ucollections import namedtuple
 
 compat_str = '\nUnified PiicoDev library out of date.  Get the latest module: https://piico.dev/unified \n'
 
@@ -17,8 +16,6 @@ _REG_I2C_ADDRESS = 0x04
 _REG_POT         = 0x05
 _REG_LED         = 0x07
 _REG_WHOAMI      = 0x11
-
-StatusTuple = namedtuple("status", ("last_command_known", "last_command_success"))
 
 def _read_bit(x, n):
     return x & 1 << n != 0
@@ -60,7 +57,7 @@ class PiicoDev_Potentiometer(object):
     
     def _write(self, register, data):
         try:
-            self.i2c.writeto_mem(self._address, register, data)
+            self.i2c.writeto_mem(self.address, register, data)
         except:
             print(i2c_err_str.format(self.address))
     
@@ -74,7 +71,7 @@ class PiicoDev_Potentiometer(object):
     def _write_int(self, register, integer, length=1):
         self._write(register, int.to_bytes(integer, length, 'big'))
 
-    @property    
+    @property
     def raw(self):
         """Returns the raw ADC value"""
         raw_value = self._read_int(_REG_POT, 2)
@@ -116,7 +113,7 @@ class PiicoDev_Potentiometer(object):
     def address(self):
         """Returns the currently configured 7-bit I2C address"""
         return self._address
-    
+
     @property
     def led(self):
         """Returns the state onboard "Power" LED. `True` / `False`"""
@@ -126,7 +123,7 @@ class PiicoDev_Potentiometer(object):
     def led(self, x):
         """control the state onboard "Power" LED. accepts `True` / `False`"""
         self._write_int(_set_bit(_REG_LED, 7), int(x)); return 0
-    
+
     @property
     def whoami(self):
         """returns the device identifier"""
