@@ -18,4 +18,4 @@ while True:
     print("Value: " + str(pot.value))
     print("Raw Value: " + str(pot.raw))
     print("------------------------------------------")
-    #pot.setI2Caddr(0x20)
+    pot.setI2Caddr(0x35)

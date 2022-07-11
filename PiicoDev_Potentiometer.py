@@ -137,7 +137,7 @@ class PiicoDev_Potentiometer(object):
         v[0]=self._read_int(_REG_FIRM_MIN)
         return (v[1],v[0])
     
-    def setI2Caddr(self, x):
+    def setI2Caddr(self, newAddr):
         x=int(newAddr)
         assert 8 <= x <= 0x77, 'address must be >=0x08 and <=0x77'
         self._write_int(_REG_I2C_ADDRESS, x)
