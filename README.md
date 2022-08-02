@@ -15,7 +15,7 @@ freq | int | 100 to 1000000 | Device dependent | I2C Bus frequency (Hz).  Ignore
 sda | Pin | Device Dependent | Device Dependent | I2C SDA Pin. Implemented on Raspberry Pi Pico only
 scl | Pin | Device Dependent | Device Dependent | I2C SCL Pin. Implemented on Raspberry Pi Pico only
 address | int | 0x35 | 0x35, 0x08 - 0x77 | Manually specify the address of the connected device. For when a software address is set on the device.
-ID | List[int, int, int, int] | 1=ON, 0=OFF | [0,0,0,0] | Hardware switches change the device address - Abstracts the need for user to look up an address, simply input the switch positions. Alternatively, use `address` for explicit address.
+id | List[int, int, int, int] | 1=ON, 0=OFF | [0,0,0,0] | Hardware switches change the device address - Abstracts the need for user to look up an address, simply input the switch positions. Alternatively, use `address` for explicit address.
 minimum | float | -1.797*10^308 to 1.797*10^308 | 0.0 | The value that the pot returns at it's minimum *travel*
 maximum | float | -1.797*10^308 to 1.797*10^308  | 100.0 | The value that the pot returns at it's maximum *travel*
 
