@@ -4,10 +4,8 @@ This is the firmware repo for the Core Electronics [PiicoDev® Potentiometer](ht
 
 This module depends on the [PiicoDev Unified Library](https://github.com/CoreElectronics/CE-PiicoDev-Unified), include `PiicoDev_Unified.py` in the project directory on your MicroPython device.
 
-
-# Reference
-
-## Initialisation `PiicoDev_Potentiometer(bus=, freq=, sda=, scl=, address=0x35, id=, minimum=0.0, maximum=100.0)`
+## Initialisation 
+`PiicoDev_Potentiometer(bus=, freq=, sda=, scl=, address=0x35, id=, minimum=0.0, maximum=100.0)`
 Parameter | Type | Range | Default | Description
 --- | --- | --- | --- | ---
 bus | int | 0,1 | Raspberry Pi Pico: 0, Raspberry Pi: 1 | I2C Bus.  Ignored on Micro:bit
