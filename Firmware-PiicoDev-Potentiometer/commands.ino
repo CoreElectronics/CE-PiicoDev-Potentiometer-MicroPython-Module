@@ -2,9 +2,6 @@
   User accessible functions
 */
 
-// Macro for number of elements in an array
-#define COUNT_OF(x) ((sizeof(x)/sizeof(0[x])) / ((size_t)(!(sizeof(x) % sizeof(0[x])))))
-
 void readPotentiometer(char *data) {
   #if DEBUG
     Serial.println(analogRead(potentiometerPin));
@@ -25,23 +22,17 @@ void firmwareMinorReturn(char *data) {
   loadArray((uint8_t)valueMap.firmwareMinor);
 }
 
-// Control the power LED
 void getPowerLed(char *data) {
   valueMap.led = digitalRead(powerLedPin);
   loadArray((uint8_t)valueMap.led);
 }
 
-// Control the power LED
 void setPowerLed(char *data) {
   powerLed( (data[0] == 1) );
 }
 
 void powerLed(bool state) {
-  if (state) {
-    digitalWrite(powerLedPin, true);
-  } else {
-    digitalWrite(powerLedPin, false);
-  }
+  digitalWrite(powerLedPin, state);
 }
 
 void setAddress(char *data) {
