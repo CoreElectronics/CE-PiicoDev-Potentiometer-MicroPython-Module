@@ -87,7 +87,7 @@ class PiicoDev_Potentiometer(object):
         if raw_value is None:
             return(float('NaN'))
         else:
-            return round(self._minimum + ((self._maximum - self._minimum) / 1023) * raw_value, 1)
+            return self._minimum + ((self._maximum - self._minimum) / 1023) * raw_value
     
     @property
     def minimum(self):

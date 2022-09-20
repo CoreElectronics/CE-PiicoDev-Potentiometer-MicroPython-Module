@@ -1,9 +1,11 @@
+# Read the PiicoDev Potentiometer value
 from PiicoDev_Potentiometer import PiicoDev_Potentiometer
 from PiicoDev_Unified import sleep_ms
  
-pot = PiicoDev_Potentiometer(minimum=0.0, maximum=100.0)   # Initialise the RFID module
+pot = PiicoDev_Potentiometer() # Initialise the potentiometer
+pot.maximum = 100 # set the range of output values
+pot.minimum = 0   # if minimum or maximum are ommitted, they will default to 0 and 100 respectively
 
 while True:
-    value = pot.value
-    print(value)
+    print(pot.value) # read the pot and print the result
     sleep_ms(100)

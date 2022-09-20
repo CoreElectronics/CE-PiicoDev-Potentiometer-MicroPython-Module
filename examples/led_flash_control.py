@@ -1,12 +1,16 @@
+# Use the potentiometer as a control input - change the flash speed of the on-board LED
 from PiicoDev_Potentiometer import PiicoDev_Potentiometer
 from PiicoDev_Unified import sleep_ms
- 
-pot = PiicoDev_Potentiometer(minimum=300, maximum=50)   # Initialise the module
+
+# Initialise the module - here the range corresponds to millisecond delays
+pot = PiicoDev_Potentiometer(minimum=500, maximum=50)
 
 while True:
-    value = int(pot.value)
-    print('Value: ' + str(value))
-    pot.led = False
-    sleep_ms(value)
-    pot.led = True
-    sleep_ms(value)
+    delay_ms = int(pot.value)    # sample the pot, we know the value is already useful as milliseconds
+    pot.led = not pot.led        # toggle the LED
+    
+    hz = round(1000/delay_ms/2, 1) # convert delay [ms] to frequency [Hz]
+    print('Flash rate ' + str(hz) + ' Hz')
+    
+    sleep_ms(delay_ms)           # wait for the delay time
+    
