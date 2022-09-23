@@ -1,7 +1,7 @@
 from PiicoDev_Potentiometer import PiicoDev_Potentiometer
 from PiicoDev_Unified import sleep_ms
  
-pot = PiicoDev_Potentiometer(address=0x35, minimum=0.0, maximum=100.0)   # Initialise the RFID module
+pot = PiicoDev_Potentiometer(id=[0,0,0,0], minimum=0.0, maximum=100.0)   # Initialise the RFID module address=0x35, 
 
 while True:
     firmware = pot.firmware

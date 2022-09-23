@@ -21,7 +21,7 @@
 
 #define FIRMWARE_MAJOR 0x01
 #define FIRMWARE_MINOR 0x00
-#define DEVICE_ID 379
+#define DEVICE_ID 411
 #define DEFAULT_I2C_ADDRESS 0x35    // The default address when all switches are off
 #define I2C_ADDRESS_POOL_START 0x08 // The start of the 'smart module address pool' minus 1 - addresses settable by switches
 #define SOFTWARE_ADDRESS true
