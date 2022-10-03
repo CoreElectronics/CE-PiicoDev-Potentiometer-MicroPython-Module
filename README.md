@@ -108,7 +108,7 @@ The PiicoDev Potentiometer is an I2C device with default address 0x35.
 | Device ID        | 0x11      | 2      | R    | 0x01EF (d495)              | I2C device ID
 | Firmware Major   |           | 1      | R    | Varies           | Major firmware version
 | Firmware Minor   |           | 1      | R    | Varies           | Minor firmware version
-| I2C Address      |           | 1      | W    | 0xA1             | Set new I2C address
+| I2C Address      |           | 1      | W    | 0x35             | Set new I2C address
 | LED (Read status)| 0x07      | 1      | R    | 1                | 0=OFF, 1=ON
 | LED (Write status)| 0x87      | 1      | W    | 1                | 0=OFF, 1=ON
 
