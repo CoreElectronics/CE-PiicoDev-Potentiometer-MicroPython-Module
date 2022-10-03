@@ -37,8 +37,6 @@ class PiicoDev_Potentiometer(object):
         self._address = address
         self.minimum = minimum
         self.maximum = maximum
-        self.last_command_known = False
-        self.last_command_success = False
         if type(id) is list and not all(v == 0 for v in id): # preference using the ID argument. ignore id if all elements zero
             assert max(id) <= 1 and min(id) >= 0 and len(id) == 4, "id must be a list of 1/0, length=4"
             self._address=8+id[0]+2*id[1]+4*id[2]+8*id[3] # select address from pool
