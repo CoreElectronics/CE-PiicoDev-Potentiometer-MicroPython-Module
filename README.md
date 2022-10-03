@@ -101,7 +101,7 @@ pot.setI2Caddr(0x45)
 ```
 
 ## Device Registers
-The PiicoDev Potentiometer is an I2C device with default address 0x35.
+The PiicoDev Potentiometer is an I2C device with default address 0x35. The register map is provided if you wish to create your own driver. A register can be Read (R) or Write (W), but not both. For values that require Read *and* Write, the convention is to set bit7 for the Write-register. Eg. the status LED - Read: 0x07 and Write: 0x07 | 0x80 = 0x87
 
 | Register Name    | Address   | Bytes  | Mode | Default Value    | Description
 | ---------------- | --------- | ------ | ---- | ---------------- | -----------
