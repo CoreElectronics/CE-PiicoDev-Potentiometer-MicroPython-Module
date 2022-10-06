@@ -7,24 +7,24 @@ void readPotentiometer(char *data) {
     Serial.println(analogRead(potentiometerPin));
   #endif
   valueMap.pot = 1023 - analogRead(potentiometerPin);
-  loadArray((uint16_t)valueMap.pot);
+  loadArray(valueMap.pot);
 }
 
 void idReturn(char *data) {
-  loadArray((uint16_t)valueMap.id);
+  loadArray(valueMap.id);
 }
 
 void firmwareMajorReturn(char *data) {
-  loadArray((uint8_t)valueMap.firmwareMajor);
+  loadArray(valueMap.firmwareMajor);
 }
 
 void firmwareMinorReturn(char *data) {
-  loadArray((uint8_t)valueMap.firmwareMinor);
+  loadArray(valueMap.firmwareMinor);
 }
 
 void getPowerLed(char *data) {
   valueMap.led = digitalRead(powerLedPin);
-  loadArray((uint8_t)valueMap.led);
+  loadArray(valueMap.led);
 }
 
 void setPowerLed(char *data) {
