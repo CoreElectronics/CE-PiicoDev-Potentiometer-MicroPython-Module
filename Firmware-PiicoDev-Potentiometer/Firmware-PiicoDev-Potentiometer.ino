@@ -20,7 +20,7 @@
 #include <avr/power.h> // For powering-down peripherals such as ADC and Timers
 
 #define FIRMWARE_MAJOR 0x01
-#define FIRMWARE_MINOR 0x00
+#define FIRMWARE_MINOR 0x01
 #define DEVICE_ID 379
 #define DEFAULT_I2C_ADDRESS 0x35    // The default address when all switches are off
 #define I2C_ADDRESS_POOL_START 0x08 // The start of the 'smart module address pool' minus 1 - addresses settable by switches
@@ -65,7 +65,17 @@ volatile uint16_t incomingDataSpot = 0; // Keeps track of where we are in the in
 uint8_t responseBuffer[I2C_BUFFER_SIZE]; // Used to pass data back to master
 volatile uint8_t responseSize = 1; // Defines how many bytes of relevant data is contained in the responseBuffer
 
-struct memoryMap {
+struct memoryMapRegs {
+  uint8_t id;
+  uint8_t firmwareMajor;
+  uint8_t firmwareMinor;
+  uint8_t i2cAddress;
+  uint8_t pot;
+  uint8_t led;
+  uint8_t ledWrite;
+};
+
+struct memoryMapData {
   uint16_t id;
   uint8_t firmwareMajor;
   uint8_t firmwareMinor;
@@ -76,8 +86,8 @@ struct memoryMap {
 };
 
 // Register addresses.
-const memoryMap registerMap = {
-  .id = 0x11,
+const memoryMapRegs registerMap = {
+  .id = 0x01,
   .firmwareMajor = 0x02,
   .firmwareMinor = 0x03,
   .i2cAddress = 0x04,
@@ -86,7 +96,7 @@ const memoryMap registerMap = {
   .ledWrite = 0x87,
 };
 
-volatile memoryMap valueMap = {
+volatile memoryMapData valueMap = {
   .id = DEVICE_ID,
   .firmwareMajor = FIRMWARE_MAJOR,
   .firmwareMinor = FIRMWARE_MINOR,
