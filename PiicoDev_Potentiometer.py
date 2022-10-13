@@ -11,13 +11,12 @@ _BASE_ADDRESS = 0x35
 _DEVICE_ID_POT   = 379
 _DEVICE_ID_SLIDE = 411
 
-_REG_STATUS      = 0x01
+_REG_WHOAMI      = 0x01
 _REG_FIRM_MAJ    = 0x02
 _REG_FIRM_MIN    = 0x03
 _REG_I2C_ADDRESS = 0x04
 _REG_POT         = 0x05
 _REG_LED         = 0x07
-_REG_WHOAMI      = 0x11
 
 def _read_bit(x, n):
     return x & 1 << n != 0
