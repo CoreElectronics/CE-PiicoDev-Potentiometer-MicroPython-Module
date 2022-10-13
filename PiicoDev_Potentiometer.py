@@ -26,7 +26,7 @@ def _set_bit(x, n):
     return x | (1 << n)
 
 class PiicoDev_Potentiometer(object):
-    def __init__(self, bus=None, freq=None, sda=None, scl=None, address=_BASE_ADDRESS, id=None, minimum=0.0, maximum=100.0):
+    def __init__(self, bus=None, freq=None, sda=None, scl=None, address=_BASE_ADDRESS, id=None, minimum=0.0, maximum=100.0, suppress_warnings=False):
         try:
             if compat_ind >= 1:
                 pass
@@ -34,7 +34,7 @@ class PiicoDev_Potentiometer(object):
                 print(compat_str)
         except:
             print(compat_str)
-        self.i2c = create_unified_i2c(bus=bus, freq=freq, sda=sda, scl=scl)
+        self.i2c = create_unified_i2c(bus=bus, freq=freq, sda=sda, scl=scl, suppress_warnings=suppress_warnings)
         self._address = address
         self.minimum = minimum
         self.maximum = maximum
