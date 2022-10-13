@@ -4,13 +4,12 @@ compat_str='\nUnified PiicoDev library out of date.  Get the latest module: http
 _BASE_ADDRESS=53
 _DEVICE_ID_POT=379
 _DEVICE_ID_SLIDE=411
-_REG_STATUS=1
+_REG_WHOAMI=1
 _REG_FIRM_MAJ=2
 _REG_FIRM_MIN=3
 _REG_I2C_ADDRESS=4
 _REG_POT=5
 _REG_LED=7
-_REG_WHOAMI=17
 def _read_bit(x,n):return x&1<<n!=0
 def _set_bit(x,n):return x|1<<n
 class PiicoDev_Potentiometer:
