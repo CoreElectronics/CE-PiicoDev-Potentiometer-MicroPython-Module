@@ -10,6 +10,7 @@ _REG_FIRM_MIN=3
 _REG_I2C_ADDRESS=4
 _REG_POT=5
 _REG_LED=7
+_REG_SELF_TEST=9
 def _read_bit(x,n):return x&1<<n!=0
 def _set_bit(x,n):return x|1<<n
 class PiicoDev_Potentiometer:
@@ -63,4 +64,6 @@ class PiicoDev_Potentiometer:
 	def whoami(self):'returns the device identifier';return self._read_int(_REG_WHOAMI,2)
 	@property
 	def firmware(self):'Returns the firmware version';v=[0,0];v[1]=self._read_int(_REG_FIRM_MAJ);v[0]=self._read_int(_REG_FIRM_MIN);return v[1],v[0]
+	@property
+	def self_test(self):'Returns the result of the self-test';return self._read_int(_REG_SELF_TEST)
 	def setI2Caddr(self,newAddr):x=int(newAddr);assert 8<=x<=119,'address must be >=0x08 and <=0x77';self._write_int(_REG_I2C_ADDRESS,x);self._address=x;sleep_ms(5);return 0
