@@ -9,6 +9,8 @@
  * Rotory Potentiometer: https://core-electronics.com.au/catalog/product/view/sku/CE08463
  * Slide Potentiometer:  https://core-electronics.com.au/catalog/product/view/sku/CE08502
  *
+ * v1.1 initial release firmware
+ * v1.2 include self-test function to test for shorts between ID switch pins
  */
 
 #define DEBUG 0
@@ -20,7 +22,7 @@
 #include <avr/power.h> // For powering-down peripherals such as ADC and Timers
 
 #define FIRMWARE_MAJOR 0x01
-#define FIRMWARE_MINOR 0x01
+#define FIRMWARE_MINOR 0x02
 #define DEVICE_ID 411
 #define DEFAULT_I2C_ADDRESS 0x35    // The default address when all switches are off
 #define I2C_ADDRESS_POOL_START 0x08 // The start of the 'smart module address pool' minus 1 - addresses settable by switches
@@ -73,6 +75,7 @@ struct memoryMapRegs {
   uint8_t pot;
   uint8_t led;
   uint8_t ledWrite;
+  uint8_t getSelfTestResult;
 };
 
 struct memoryMapData {
@@ -83,6 +86,7 @@ struct memoryMapData {
   uint16_t pot;
   uint8_t led;
   uint8_t ledWrite;
+  uint8_t selfTestResult;
 };
 
 // Register addresses.
@@ -94,6 +98,7 @@ const memoryMapRegs registerMap = {
   .pot = 0x05,
   .led = 0x07,
   .ledWrite = 0x87,
+  .getSelfTestResult = 0x09
 };
 
 volatile memoryMapData valueMap = {
@@ -103,7 +108,8 @@ volatile memoryMapData valueMap = {
   .i2cAddress = DEFAULT_I2C_ADDRESS,
   .pot = 0x00,
   .led = 0x01,
-  .ledWrite = 0x01
+  .ledWrite = 0x01,
+  .selfTestResult = 0
 };
 
 uint8_t currentRegisterNumber;
@@ -120,6 +126,7 @@ void setAddress(char *data);
 void readPotentiometer(char *data);
 void getPowerLed(char *data);
 void setPowerLed(char *data);
+void getSelfTest(char *data);
 
 functionMap functions[] = {
   {registerMap.id, idReturn},
@@ -129,6 +136,7 @@ functionMap functions[] = {
   {registerMap.pot, readPotentiometer},
   {registerMap.led, getPowerLed},
   {registerMap.ledWrite, setPowerLed},
+  {registerMap.getSelfTestResult, getSelfTest},
 };
 
 void setup() {
